@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import FormRegister from "../components/organisms/FormRegister";
-import Sections from "../components/molecules/Sections";
+import Section from "../components/molecules/Section";
 import "../assets/styles/Forms.css"
 
-function Register({ toggleForm }) {
+function Register() {
     return (  
     <>
         <div className="container" id="container">
             <FormRegister />
-            <Sections toggleForm={toggleForm} />
+            <Section />
         </div>
     </>
     );

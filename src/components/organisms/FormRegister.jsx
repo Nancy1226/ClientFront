@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Formik, Form} from "formik";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useContext, useRef} from 'react';
-// import { loginUser } from '../../api/routes';
+import { createUser } from '../../api/route.js';
 import Swal from 'sweetalert2';
 import axios from "axios";
 import Title from "../atoms/Title.jsx";
@@ -19,15 +19,23 @@ function FormRegister() {
   
     return ( 
     <>
-    <div class="form-container sign-up">
+    {/* <div class="form-container sign-up"> */}
+    <StyledContainer>
      <Formik
               initialValues={{
+                name_user:"",
                 email:"",
-                password_user:"",
+                password_user:"", 
+                confirmPassword: "",
               }}
 
               validate={(values)=>{ //funcion para validar el formumlario
                 let errores = {};
+
+                //validacion correo
+                if (!values.name_user) {
+                  errores.name_user = "Por favor ingresa un nombre de usuario";
+                } 
 
                 //validacion correo
                 if (!values.email) {
@@ -50,9 +58,18 @@ function FormRegister() {
                     )
                   ) {
                     errores.password_user =
-                      "El correo solo puede contener letras, numeros, puntos";
+                      "El nombre de usuario solo puede contener letras, numeros, puntos";
                   }
 
+                  // Validación para confirmar contraseña
+                  if(!values.confirmPassword){
+                    errores.confirmPassword = "Por favor ingresa una contraseña";
+                  }
+                  
+                 if (values.password_user !== values.confirmPassword) {
+                   errores.confirmPassword = 'Las contraseñas no coinciden';
+                 }
+ 
                 //validacion para ambos
                 
 
@@ -61,23 +78,29 @@ function FormRegister() {
 
               onSubmit={ async(values, actions) => { //funcion para enviar el forumario      
                 try {
-                //   const response = await loginUser(values);
-                //   if(response.status === 200){
-                //     Swal.fire({
-                //       icon: "success",
-                //       title: "Bienvenido",
-                //       showConfirmButton: false,
-                //       timer: 1500,
-                //     });
-                //   }
+
+                  const objectDataFront = {
+                    name_user: values.name_user,
+                    email: values.email,
+                    password_user: values.password_user
+                  }
+
+                  const response = await createUser(objectDataFront);
+                  if(response.status === 201){
+                    Swal.fire({
+                      icon: "success",
+                      title: "Registrado correctamente",
+                      showConfirmButton: false,
+                      timer: 1500,
+                    });
+                  }
                 // await new Promise((resolve) => {
                 //   window.localStorage.setItem( "loggedUser", JSON.stringify(response.data));
                 //   resolve();
                 // });
                 // setIsLoged(true);
                 // setUserName(response.data);
-                navigate("/dashboard");
-            
+                navigate("/");
                 } catch (error) {
                   Swal.fire({
                     icon: "error",
@@ -86,9 +109,9 @@ function FormRegister() {
                     footer: 'Si el problema persiste intentelo mas tarde'
                   });
                   console.log(error);
-                //   if (error.response) {
-                //     console.log(error.response.data);
-                //   }
+                  if (error.response) {
+                    console.log(error.response.data);
+                  }
                 }
                 
               }}
@@ -97,8 +120,19 @@ function FormRegister() {
               {({ values, errors, touched,handleSubmit, handleChange, handleBlur, isSubmitting }) => (
 
                   <Form onSubmit={handleSubmit}>
-                  <Title msn={"Inicio de sesion"} />
-                  <Span txt={"Ingrese su contraseña y correo electronico"} />
+                  <Title msn={"Registro"} />
+                  <Span txt={"Ingrese su contraseña y correo electrónico"} />
+
+                  <Input
+                    type={"text"}
+                    placeholder={"Nombre de usuario"}
+                    name="name_user"
+                    dato={values.name_user}
+                    valor={handleChange}
+                    onBlur={handleBlur}
+                  />
+                {touched.name_user && errors.name_user && <div className="error">{errors.name_user}</div>}
+
                   <Input
                     type={"email"}
                     placeholder={"Correo"}
@@ -119,13 +153,30 @@ function FormRegister() {
                   />
                 {touched.password_user && errors.password_user && <div className="error">{errors.password_user}</div>}
 
-                  <Button  name={"Iniciar sesion"} />
+                <Input
+                    type={"password"}
+                    placeholder={"Confirmación de contraseña"}
+                    name="confirmPassword"
+                    dato={values.confirmPassword}
+                    valor={handleChange}
+                    onBlur={handleBlur}
+                  />
+                {touched.confirmPassword && errors.confirmPassword && <div className="error">{errors.confirmPassword}</div>}
+
+                  <Button  name={"Registrarse"} />
                 </Form>
               )}
             </Formik>
-        </div>
+        </StyledContainer>
     </> 
     );
 }
 
 export default FormRegister;
+
+const StyledContainer = styled.div`
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;   
+`;

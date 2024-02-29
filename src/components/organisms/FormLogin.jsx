@@ -2,14 +2,14 @@ import styled from "styled-components";
 import { Formik, Form} from "formik";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useContext, useRef} from 'react';
-// import { loginUser } from '../../api/routes';
+import { loginUser } from '../../api/route.js';
 import Swal from 'sweetalert2';
-import axios from "axios";
 import Title from "../atoms/Title.jsx";
 import Input from "../atoms/Input.jsx";
 import Button from "../atoms/Button.jsx";
 import Span from "../atoms/Label.jsx";
 import UserContext from '../../context/UserContext.js';
+// import "../../assets/styles/Forms.css"
 
 function FormLogin() {
     const { setIsLoged } = useContext(UserContext);
@@ -18,7 +18,7 @@ function FormLogin() {
   
     return ( 
     <>
-    <div class="form-container sign-up">
+    <StyledContainer>
      <Formik
               initialValues={{
                 email:"",
@@ -49,10 +49,9 @@ function FormLogin() {
                     )
                   ) {
                     errores.password_user =
-                      "El correo solo puede contener letras, numeros, puntos";
+                      "La contraseña solo puede contener letras, numeros, puntos";
                   }
 
-                //validacion para ambos
                 
 
                 return errores;
@@ -60,21 +59,21 @@ function FormLogin() {
 
               onSubmit={ async(values, actions) => { //funcion para enviar el forumario      
                 try {
-                //   const response = await loginUser(values);
-                //   if(response.status === 200){
-                //     Swal.fire({
-                //       icon: "success",
-                //       title: "Bienvenido",
-                //       showConfirmButton: false,
-                //       timer: 1500,
-                //     });
-                //   }
-                // await new Promise((resolve) => {
-                //   window.localStorage.setItem( "loggedUser", JSON.stringify(response.data));
-                //   resolve();
-                // });
-                // setIsLoged(true);
-                // setUserName(response.data);
+                   const response = await loginUser(values);
+                   if(response.status === 200){
+                     Swal.fire({
+                       icon: "success",
+                       title: "Bienvenido",
+                       showConfirmButton: false,
+                       timer: 1500,
+                     });
+                   }
+                 await new Promise((resolve) => {
+                   window.localStorage.setItem( "loggedUser", JSON.stringify(response.data));
+                   resolve();
+                 });
+                 setIsLoged(true);
+                setUserName(response.data);
                 navigate("/dashboard");
             
                 } catch (error) {
@@ -85,9 +84,9 @@ function FormLogin() {
                     footer: 'Si el problema persiste intentelo mas tarde'
                   });
                   console.log(error);
-                //   if (error.response) {
-                //     console.log(error.response.data);
-                //   }
+                  if (error.response) {
+                    console.log(error.response.data);
+                  }
                 }
                 
               }}
@@ -122,11 +121,16 @@ function FormLogin() {
                 </Form>
               )}
             </Formik>
-            </div>
+            </StyledContainer>
     </> 
     );
 }
 
 export default FormLogin;
 
-
+const StyledContainer = styled.div`
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+`;

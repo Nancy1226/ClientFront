@@ -4,7 +4,7 @@ import UserContext from '../context/UserContext'
 import RouteProtected from './RouteProtected'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
-
+import Dashboard from '../pages/Dashboard'
 
 function App() {
   const [isLoged, setIsLoged] = useState(
@@ -23,19 +23,18 @@ function App() {
   return (
     <>
     <BrowserRouter>
-      {/* <UserContext.Provider value={{ isLoged, setIsLoged, userName, setUserName }}> */}
+      <UserContext.Provider value={{ isLoged, setIsLoged, userName, setUserName }}>
         <Routes>
           <Route path="/" element={<Login/>}></Route>
           <Route path='/register' element={<Register/>}></Route>
           
-          
-          {/* <Route element={<RouteProtected session={isLoged}/>}> */}
+          <Route element={<RouteProtected session={isLoged}/>}>
+          <Route path='/dashboard' element={<Dashboard/>}></Route>
             {/* <Route path='/dashboard' element={<Dashboard />} ></Route> */}
-          {/* </Route> */}
+          </Route>
 
-          {/* <Route path="/*" element={<NotFound/>} /> */}
         </Routes>
-      {/* </UserContext.Provider> */}
+      </UserContext.Provider>
       </BrowserRouter>
     </>
   )
